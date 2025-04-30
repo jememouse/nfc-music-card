@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFC音乐卡教程 | 電波魔法</title>
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff2a6d;
+            --cyber-blue: #05d9e8;
+            --electric-purple: #d300c5;
+            --matrix-green: #00ff87;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .cyber-card {
+            width: 400px;
+            background: linear-gradient(to bottom, #1a0938 0%, #0d0528 100%);
+            border: 1px solid var(--cyber-blue);
+            box-shadow: 0 0 20px rgba(5,217,232,0.3);
+            font-size: 13px;
+        }
+        .title-glow {
+            text-shadow: 0 0 8px var(--electric-purple);
+            animation: float 3s ease-in-out infinite;
+        }
+        .button-box {
+            background: rgba(0,255,135,0.1);
+            border: 1px dashed var(--matrix-green);
+            transition: all 0.3s ease;
+        }
+        .button-box:hover {
+            background: rgba(0,255,135,0.2);
+            transform: scale(1.02);
+        }
+        .warning-triangle {
+            background: linear-gradient(45deg, transparent 15px, rgba(255,42,109,0.2) 0);
+        }
+    </style>
+</head>
+<body class="bg-black flex justify-center p-6 font-sans text-white">
+    <div class="cyber-card rounded-lg overflow-hidden p-5">
+        <!-- 标题 -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold title-glow mb-2" style="color: var(--cyber-blue);">
+                ✨ NFC 音乐卡制作教程入口 ✨
+            </h1>
+            <p class="opacity-80">
+                想碰一下手机就播放你喜欢的歌吗？✨
+            </p>
+        </div>
+
+        <!-- 教程跳转按钮 -->
+        <div class="mb-8 text-center">
+            <p class="mb-4 font-medium" style="color: var(--matrix-green);">
+                根据你的手机系统，点击查看教程 👇
+            </p>
+            
+            <div class="flex justify-between px-2 mb-3">
+                <div class="button-box p-3 rounded-lg w-[45%] flex flex-col items-center">
+                    <div class="text-sm font-medium mb-2" style="color: var(--neon-pink);">
+                        安卓 Android的NFC使用教程
+                    </div>
+                    <button onclick="window.location.href='andriod-nfc.html'" class="bg-black border border-[var(--neon-pink)] px-4 py-2 rounded-full text-xs font-bold" style="color: var(--neon-pink);">
+                        点击跳转教程
+                    </button>
+                </div>
+                
+                <div class="button-box p-3 rounded-lg w-[45%] flex flex-col items-center">
+                    <div class="text-sm font-medium mb-2" style="color: var(--cyber-blue);">
+                        苹果 iOS的NFC使用教程
+                    </div>
+                    <button class="bg-black border border-[var(--cyber-blue)] px-4 py-2 rounded-full text-xs font-bold" style="color: var(--cyber-blue);">
+                        [苹果版教程跳转]
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 重要须知 -->
+        <div class="warning-triangle p-4 rounded-lg mb-4">
+            <div class="flex items-start mb-3">
+                <div class="text-xl mr-2" style="color: var(--neon-pink);">⚠️</div>
+                <h2 class="text-lg font-bold" style="color: var(--neon-pink);">
+                    重要须知
+                </h2>
+            </div>
+            
+            <ul class="space-y-3 pl-2">
+                <li>
+                    <p class="font-medium" style="color: var(--cyber-blue);">
+                        🗝️ 确认NFC功能:
+                    </p>
+                    <p class="pl-4 mt-1 text-sm">
+                        请确保手机支持NFC并已开启。这是基础要求，不支持或未开启将无法使用，且<span class="font-bold" style="color: var(--neon-pink);">无法退换</span>。
+                    </p>
+                </li>
+                
+                <li>
+                    <p class="font-medium" style="color: var(--cyber-blue);">
+                        🎵 一卡一曲:
+                    </p>
+                    <p class="pl-4 mt-1 text-sm">
+                        每张卡仅能绑定<span class="font-bold" style="color: var(--neon-pink);">一首歌曲</span>，首次设置后通常无法更改。
+                    </p>
+                </li>
+                
+                <li>
+                    <p class="font-medium" style="color: var(--cyber-blue);">
+                        🎧 暂不支持播客:
+                    </p>
+                    <p class="pl-4 mt-1 text-sm">
+                        目前小卡主要用于播放音乐，<span class="font-bold" style="color: var(--neon-pink);">不支持直接绑定播客</span>。
+                    </p>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="text-center text-xs opacity-70 mt-6">
+            ✧･ﾟ: * 触碰魔法 音波召唤 *:･ﾟ✧
+        </div>
+    </div>
+</body>
+</html>

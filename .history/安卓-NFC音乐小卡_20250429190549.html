@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIY音乐NFC卡！贴心安卓教程</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Rounded+Mplus+1c:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F5F5F7;
+            font-family: 'Noto Sans SC', sans-serif;
+            color: #334155;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Rounded Mplus 1c', sans-serif;
+            color: #1E293B;
+        }
+
+        @keyframes fadeInScaleUp {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes subtleRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1.0; transform: scale(1.08); }
+        }
+        @keyframes ripple {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+
+        .container-card {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 6px 16px rgba(255, 165, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            animation: fadeInScaleUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container-card::before,
+        .container-card::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container-card::before {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.2) 0%, rgba(255, 165, 0, 0) 65%);
+            top: -70px;
+            right: -70px;
+            animation: subtleRotate 28s linear infinite reverse;
+        }
+        .container-card::after {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(135, 206, 235, 0.2) 0%, rgba(135, 206, 235, 0) 65%);
+            bottom: -50px;
+            left: -50px;
+            animation: subtlePulse 5s ease-in-out infinite;
+        }
+
+        .step-number {
+            background-image: linear-gradient(135deg, #fed7aa 0%, #fb923c 100%);
+            color: #7c2d12;
+            border-radius: 50%;
+            width: 2.8rem;
+            height: 2.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: 'Rounded Mplus 1c', sans-serif;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(251, 146, 60, 0.4);
+            z-index: 1;
+        }
+
+        .step-card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            opacity: 0;
+            animation: fadeInUp 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .step-card:nth-child(1) { animation-delay: 0.1s; }
+        .step-card:nth-child(2) { animation-delay: 0.15s; }
+        .step-card:nth-child(3) { animation-delay: 0.2s; }
+        .step-card:nth-child(4) { animation-delay: 0.25s; }
+
+
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 0.6s linear;
+          background-color: rgba(251, 146, 60, 0.4);
+          pointer-events: none;
+        }
+
+        .instruction-image-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background-color: #f9fafb;
+            border: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+             z-index: 1;
+             min-height: 200px;
+        }
+
+        .instruction-image {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            color: #9ca3af;
+            border-radius: 0.75rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+             z-index: 1;
+        }
+        .instruction {
+             z-index: 1;
+             position: relative;
+        }
+        .code-block {
+            background-color: #f3f4f6;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            word-break: break-all;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .code-block strong {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        strong.accent-blue { color: #0ea5e9; }
+        strong.accent-orange { color: #f97316; }
+        strong.accent-pink { color: #ec4899; }
+        strong.accent-green { color: #10b981; }
+        strong.accent-purple { color: #a855f7; }
+
+        .alert-box {
+            border-left-width: 4px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+            position: relative;
+            z-index: 1;
+        }
+        .alert-orange {
+            background-color: #fff7ed;
+            border-color: #fb923c;
+            color: #c2410c;
+        }
+        .alert-green {
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+            color: #15803d;
+        }
+        .alert-box p:first-child {
+             font-weight: 500;
+        }
+        .app-icon-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .app-icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 60px;
+            flex-shrink: 0;
+        }
+        .app-icon-image {
+            width: 48px;
+            height: 48px;
+            background-color: #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d1d5db;
+            overflow: hidden;
+        }
+        .app-icon-image img {
+             width: 100%;
+             height: 100%;
+             object-fit: cover;
+        }
+        .app-icon-name {
+            font-size: 0.75rem;
+            color: #4b5563;
+            line-height: 1.2;
+        }
+
+        .download-link {
+             color: #0ea5e9;
+             text-decoration: underline;
+             word-break: break-all;
+             align-self: center;
+        }
+        .id-extractor {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .id-extractor label {
+            display: block;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .id-extractor textarea,
+        .id-extractor input[type="text"] {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: #374151;
+            background-color: #ffffff;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .id-extractor textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .id-extractor input#idOutput {
+            background-color: #ffffff;
+            cursor: text;
+        }
+        .id-extractor input#idOutput:read-only {
+        }
+        #finalLinkOutput {
+             background-color: #f3f4f6;
+             color: #6b7280;
+             cursor: default;
+        }
+        #finalLinkOutput.highlight-link {
+             background-color: #dcfce7;
+             color: #166534;
+             font-weight: 500;
+             border-color: #86efac;
+        }
+
+
+        .copy-button {
+            background-color: #fb923c;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.375rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            margin-left: 0.5rem;
+            white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .copy-button:hover {
+            background-color: #f97316;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .copy-button:active {
+             transform: scale(0.96);
+             box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .copy-button.copied {
+             background-color: #10b981;
+        }
+        .copy-button.error {
+             background-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container-card mx-auto max-w-4xl p-6 sm:p-10 md:p-16 my-10 sm:my-16">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center text-orange-600 mb-3 relative z-10">
+            DIY音乐NFC卡！贴心安卓教程 ✨
+        </h1>
+        <p class="text-center text-slate-500 mb-12 text-lg relative z-10">想碰下手机就播放你最爱的歌？用NFC小卡就能实现！</p>
+
+        <div class="alert-box alert-orange" role="alert">
+            <p>🛠️ 准备工作：</p>
+            <p class="mt-1">
+                需要安装以下两个APP（先尝试在应用商店搜索，找不到可尝试下方链接）：
+            </p>
+            <div class="mt-4 flex flex-wrap gap-x-12 gap-y-4">
+                <div class="app-icon-group">
+                    <div class="app-icon-container" style="width: 80px"></div>
+                        <div class="app-icon-image">
+                            <img src="/images/NFC Tools PRO-logo.png"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/48x48/e2e8f0/adb5bd?text=Icon';"
+                                 alt="[NFC Tools PRO 图标]" class="rounded-lg">
+                        </div>
+                        <span class="app-icon-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">NFC Tools PRO</span>
+                    </div>
+                    <a href="https://www.bing.com/search?q=NFC+Tools+PRO+apk+%E4%B8%8B%E8%BD%BD&qs=n&form=QBRE&sp=-1&lq=0&pq=nfc+tools+pro+apk+%E4%B8%8B%E8%BD%BD&sc=12-20&sk=&cvid=3FDADA12AB6D4DF8A38821DDA495F5DF&mkt=zh-CN" target="_blank" rel="noopener noreferrer" class="download-link text-sm">点我下载</a>
+                </div>
+                 <div class="app-icon-group">
+                     <div class="app-icon-container" style="width: 80px">
+                         <div class="app-icon-image">
+                            <img src="/images/NFC Tasks-logo.png"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/48x48/e2e8f0/adb5bd?text=Icon';"
+                                 alt="[NFC Tasks 图标]" class="rounded-lg">
+                        </div>
+                        <span class="app-icon-name">NFC Tasks</span>
+                    </div>
+                     <a href="https://cn.bing.com/search?q=nfc+tasks+apk+%e4%b8%8b%e8%bd%bd&qs=HS&pq=nfc+tasks+apk&sk=HS1&sc=12-13&cvid=6199B0D16E374A40B34DD0D340C5C587&FORM=QBRE&sp=2&lq=0" target="_blank" rel="noopener noreferrer" class="download-link text-sm">点我下载</a>
+                </div>
+            </div>
+             <p class="mt-3 text-xs text-orange-700">注意：非官方商店下载链接存在风险，请自行判断安全性。</p>
+        </div>
+
+        <h2 class="text-2xl font-bold text-center mb-8 mt-12 relative z-10">🚀 开始制作 🚀</h2>
+
+        <div class="space-y-12 relative z-10">
+
+            <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h3 class="text-xl font-bold">获取歌曲链接 🎵</h3>
+                    </div>
+                    <ol class="instruction list-decimal list-inside text-slate-600 leading-relaxed text-base space-y-3">
+                        <li>打开你的音乐APP，找到喜欢的歌曲。</li>
+                        <li>点击 <strong class="accent-blue">分享</strong> (通常是『…』或分享图标)，选择 <strong class="accent-blue">复制链接</strong> 或分享文本。</li>
+                        <li>将上一步复制的 <strong class="accent-green">完整分享内容</strong> <strong class="accent-green">粘贴</strong> 到下面的框中，工具会尝试自动提取 <strong class="accent-pink">歌曲ID</strong>。
+                             <div class="id-extractor">
+                                <label for="linkInput">粘贴分享内容:</label>
+                                <textarea id="linkInput" placeholder="例如：分享李宗盛的单曲《山丘》: https://y.music.163.com/m/song?id=26598946&userid=..."></textarea>
+                                <label for="idOutput" class="mt-3">歌曲ID (自动提取，可修改):</label>
+                                <input type="text" id="idOutput" placeholder="将自动显示ID，若错误请手动修改">
+                            </div>
+                        </li>
+                        <li>确认 <strong class="accent-pink">歌曲ID</strong> 无误后，下方会自动根据模板生成 <strong class="accent-green">完整代码链接</strong>。
+                             <div class="code-block">orpheus://song/<strong>{自动填充ID}</strong>/?autoplay=1</div>
+                             <div class="text-sm text-orange-600 my-2"><strong>重要提示:</strong> 这个 `orpheus://` 开头的代码是特定音乐APP（如网易云）的格式。其他APP可能需要不同的代码格式，请自行查找。末尾的 `?autoplay=1` 代表碰卡后自动播放。</div>
+                        </li>
+                        <li>点击 <strong class="accent-green">复制</strong> 按钮，复制代码链接，准备写入NFC卡。
+                            <div class="flex items-center mt-2">
+                                <input type="text" id="finalLinkOutput" readonly placeholder="自动生成最终链接" class="flex-grow mr-2">
+                                <button id="copyButton" class="copy-button">复制</button>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                    <img src="https://picsum.photos/seed/android_step1/450/800"
+                         onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：音乐APP分享与复制链接</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                         alt="[插图示意：音乐APP分享与复制链接]"
+                         class="instruction-image">
+                </div>
+            </div>
+
+            <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h3 class="text-xl font-bold">写入NFC卡 ✨</h3>
+                    </div>
+                    <ol class="instruction list-decimal list-inside text-slate-600 leading-relaxed text-base space-y-2">
+                        <li>打开 <strong class="accent-orange">NFC Tools PRO</strong> APP。</li>
+                        <li>点击 <strong class="accent-blue">任务 (Tasks)</strong> → <strong class="accent-blue">添加任务 (Add a task)</strong>。</li>
+                        <li>选择 <strong class="accent-purple">应用程序 (Applications)</strong> → <strong class="accent-purple">URL/URI</strong>。</li>
+                        <li>在输入框 <strong class="accent-green">粘贴</strong> 你在 STEP 1 复制的 <strong class="accent-green">完整代码链接</strong> (形如 `orpheus://song/26598946/?autoplay=1`)，然后点击 <strong class="accent-blue">确定/写入 (OK/Write)</strong>。</li>
+                        <li>将 <strong class="accent-orange">空白NFC卡</strong> 靠近手机背部的 <strong class="accent-orange">NFC感应区</strong> (通常在摄像头附近)。</li>
+                        <li>APP提示检测到卡片后，点击 <strong class="accent-blue">OK</strong>。</li>
+                        <li>最后点击 <strong class="accent-blue">写 (Write)</strong> 按钮。</li>
+                    </ol>
+                </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 grid grid-cols-2 gap-4">
+                     <div class="instruction-image-container col-span-1 aspect-auto">
+                         <img src="https://picsum.photos/seed/android_step2_1/300/400"
+                              onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：NFC Tools 1-2</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='150px';"
+                              alt="[插图示意：NFC Tools 点击任务和添加任务]"
+                              class="instruction-image">
+                     </div>
+                      <div class="instruction-image-container col-span-1 aspect-auto">
+                         <img src="https://picsum.photos/seed/android_step2_2/300/400"
+                              onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：NFC Tools 3-4</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='150px';"
+                              alt="[插图示意：NFC Tools 选择应用程序和URL/URI]"
+                              class="instruction-image">
+                     </div>
+                      <div class="instruction-image-container col-span-1 aspect-auto">
+                         <img src="https://picsum.photos/seed/android_step2_3/300/400"
+                              onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：NFC Tools 5-6</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='150px';"
+                              alt="[插图示意：NFC Tools 粘贴链接并确认]"
+                              class="instruction-image">
+                     </div>
+                      <div class="instruction-image-container col-span-1 aspect-auto">
+                         <img src="https://picsum.photos/seed/android_step2_4/300/400"
+                              onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：NFC Tools 7-9</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='150px';"
+                              alt="[插图示意：NFC Tools 检测到卡片并写入]"
+                              class="instruction-image">
+                     </div>
+                 </div>
+            </div>
+
+            <div class="text-center mt-16 alert-box alert-green">
+                <p class="text-2xl font-bold mb-2">🎉 搞定！ 🎉</p>
+                <p class="text-lg text-green-800">写入成功！你的专属NFC音乐卡制作完成。用支持NFC的安卓手机碰一下卡片，就能直接播放音乐了。快去试试效果吧！</p>
+                <p class="text-sm text-green-700 mt-3">(小贴士): 别忘了检查手机的NFC功能是否已开启。不同手机的NFC感应位置和灵敏度可能稍有不同。</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+      document.addEventListener('click', function (e) {
+        const card = e.target.closest('.step-card');
+        if (!card) return;
+
+        const oldRipple = card.querySelector('.ripple');
+        if (oldRipple) {
+          oldRipple.remove();
+        }
+
+        const rect = card.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const ripple = document.createElement('span');
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.classList.add('ripple');
+
+        card.appendChild(ripple);
+
+        ripple.addEventListener('animationend', () => {
+          ripple.remove();
+        });
+      });
+
+      const linkInput = document.getElementById('linkInput');
+      const idOutput = document.getElementById('idOutput');
+      const finalLinkOutput = document.getElementById('finalLinkOutput');
+      const copyButton = document.getElementById('copyButton');
+      const codeTemplate = "orpheus://song/{id}/?autoplay=1";
+      const codeBlockIdPlaceholder = document.querySelector('.code-block strong');
+
+      function updateFinalLink(songId) {
+          if (songId && /^\d+$/.test(songId)) {
+              finalLinkOutput.value = codeTemplate.replace('{id}', songId);
+              codeBlockIdPlaceholder.textContent = songId;
+              finalLinkOutput.classList.add('highlight-link');
+          } else {
+              finalLinkOutput.value = '';
+              codeBlockIdPlaceholder.textContent = '数字';
+              finalLinkOutput.classList.remove('highlight-link');
+          }
+          copyButton.textContent = '复制';
+          copyButton.classList.remove('copied', 'error');
+      }
+
+      if (linkInput && idOutput && finalLinkOutput && copyButton && codeBlockIdPlaceholder) {
+          linkInput.addEventListener('input', function() {
+              const linkText = this.value;
+              let songId = '';
+              let match = linkText.match(/id=(\d+)/);
+              if (!match) {
+                  match = linkText.match(/song\/(\d+)/);
+              }
+
+              if (match && match[1]) {
+                  songId = match[1];
+                  idOutput.value = songId;
+                  updateFinalLink(songId);
+              } else {
+                  if(idOutput.value === '' || !/^\d+$/.test(idOutput.value)) {
+                      idOutput.value = '';
+                      updateFinalLink('');
+                  }
+              }
+          });
+
+          idOutput.addEventListener('input', function() {
+              const songId = this.value.trim();
+              updateFinalLink(songId);
+          });
+
+          copyButton.addEventListener('click', function() {
+              const linkToCopy = finalLinkOutput.value;
+              copyButton.textContent = '复制';
+              copyButton.classList.remove('copied', 'error');
+
+              if (!linkToCopy) {
+                  alert('请先生成有效的链接！');
+                  return;
+              }
+
+              if (navigator.clipboard && window.isSecureContext) {
+                  navigator.clipboard.writeText(linkToCopy).then(() => {
+                      copyButton.textContent = '已复制!';
+                      copyButton.classList.add('copied');
+                      setTimeout(() => {
+                          copyButton.textContent = '复制';
+                          copyButton.classList.remove('copied');
+                      }, 1500);
+                  }).catch(err => {
+                      console.error('Clipboard API copy failed:', err);
+                      copyButton.textContent = '失败';
+                      copyButton.classList.add('error');
+                      let errorMsg = '自动复制失败！请手动复制。';
+                      if (err.name === 'NotAllowedError') {
+                         errorMsg = '自动复制失败！请检查浏览器权限。';
+                      } else if (err.message) {
+                         errorMsg += '\n错误: ' + err.message;
+                      }
+                      alert(errorMsg);
+                       setTimeout(() => {
+                          copyButton.textContent = '复制';
+                          copyButton.classList.remove('error');
+                      }, 2500);
+                  });
+              } else {
+                  try {
+                      finalLinkOutput.select();
+                      finalLinkOutput.setSelectionRange(0, 99999);
+                      const successful = document.execCommand('copy');
+                      window.getSelection().removeAllRanges();
+
+                      if (successful) {
+                          copyButton.textContent = '已复制!';
+                          copyButton.classList.add('copied');
+                           setTimeout(() => {
+                              copyButton.textContent = '复制';
+                              copyButton.classList.remove('copied');
+                          }, 1500);
+                      } else {
+                          throw new Error('document.execCommand failed');
+                      }
+                  } catch (err) {
+                       console.error('Fallback copy method failed:', err);
+                       copyButton.textContent = '失败';
+                       copyButton.classList.add('error');
+                       alert('自动复制失败，请长按链接手动复制。');
+                       setTimeout(() => {
+                          copyButton.textContent = '复制';
+                          copyButton.classList.remove('error');
+                      }, 2500);
+                  }
+              }
+          });
+      }
+
+    </script>
+
+</body>
+</html>

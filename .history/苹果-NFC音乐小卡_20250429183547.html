@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐小卡教程 (苹果版) - 轻松创建 NFC 音乐快捷方式</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Rounded+Mplus+1c:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F5F5F7;
+            font-family: 'Noto Sans SC', sans-serif;
+            color: #334155;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Rounded Mplus 1c', sans-serif;
+            color: #1E293B;
+        }
+
+        @keyframes fadeInScaleUp {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes subtleRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); } /* Increased base opacity */
+            50% { opacity: 1.0; transform: scale(1.08); } /* Increased pulse effect */
+        }
+        @keyframes ripple {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+
+        .container-card {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 6px 16px rgba(135, 206, 235, 0.15), 0 2px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            animation: fadeInScaleUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container-card::before,
+        .container-card::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container-card::before {
+            width: 200px; /* Increased size */
+            height: 200px; /* Increased size */
+            /* Adjusted gradient for more visibility */
+            background: radial-gradient(circle, rgba(135, 206, 235, 0.3) 0%, rgba(135, 206, 235, 0) 65%);
+            top: -70px; /* Adjusted position */
+            left: -70px; /* Adjusted position */
+            animation: subtleRotate 25s linear infinite; /* Slightly slower rotation */
+        }
+        .container-card::after {
+            width: 150px; /* Increased size */
+            height: 150px; /* Increased size */
+             /* Adjusted gradient for more visibility */
+            background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, rgba(255, 182, 193, 0) 65%);
+            bottom: -50px; /* Adjusted position */
+            right: -50px; /* Adjusted position */
+            animation: subtlePulse 4.5s ease-in-out infinite; /* Slightly faster pulse */
+        }
+
+
+        .step-number {
+            background-image: linear-gradient(135deg, #a0e9ff 0%, #87CEEB 100%);
+            color: #1E293B;
+            border-radius: 50%;
+            width: 2.8rem;
+            height: 2.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: 'Rounded Mplus 1c', sans-serif;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(135, 206, 235, 0.4);
+            z-index: 1;
+        }
+
+        .step-card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            opacity: 0;
+            animation: fadeInUp 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .step-card:nth-child(1) { animation-delay: 0.1s; }
+        .step-card:nth-child(2) { animation-delay: 0.15s; }
+        .step-card:nth-child(3) { animation-delay: 0.2s; }
+        .step-card:nth-child(4) { animation-delay: 0.25s; }
+        .step-card:nth-child(5) { animation-delay: 0.3s; }
+        .step-card:nth-child(6) { animation-delay: 0.35s; }
+        .step-card:nth-child(7) { animation-delay: 0.4s; }
+        .step-card:nth-child(8) { animation-delay: 0.45s; }
+        .step-card:nth-child(9) { animation-delay: 0.5s; }
+        .step-card:nth-child(10) { animation-delay: 0.55s; }
+
+        .ripple {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 0.6s linear;
+          background-color: rgba(135, 206, 235, 0.4);
+          pointer-events: none;
+        }
+
+        .instruction-image-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background-color: #f9fafb;
+            border: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+             z-index: 1;
+        }
+
+        .instruction-image {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            color: #9ca3af;
+            border-radius: 0.75rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+             z-index: 1;
+        }
+        .instruction {
+             z-index: 1;
+             position: relative;
+        }
+
+        strong.accent-blue { color: #0ea5e9; }
+        strong.accent-orange { color: #f97316; }
+        strong.accent-pink { color: #ec4899; }
+        strong.accent-green { color: #10b981; }
+        strong.accent-purple { color: #a855f7; }
+
+        .alert-box {
+            border-left-width: 4px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+            position: relative;
+            z-index: 1;
+        }
+        .alert-yellow {
+            background-color: #fffbeb;
+            border-color: #f59e0b;
+            color: #b45309;
+        }
+        .alert-green {
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+            color: #15803d;
+        }
+        .alert-box p:first-child {
+             font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container-card mx-auto max-w-4xl p-6 sm:p-10 md:p-16 my-10 sm:my-16">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center text-sky-600 mb-3 relative z-10">
+            NFC 音乐小卡片制作教程 ✨ (iOS)
+        </h1>
+        <p class="text-center text-slate-500 mb-12 text-lg relative z-10">轻松 Get 触碰即播的魔法~</p>
+
+        <div class="alert-box alert-yellow" role="alert">
+            <p>⚠️ 操作须知：</p>
+            <p class="mt-1">开始前，请先在 iPhone 上打开音乐 App 随便放首歌 (暂停也没关系)，让它在后台准备好哦！</p>
+        </div>
+
+        <div class="space-y-12 relative z-10">
+
+            <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h2 class="text-2xl font-bold">召唤“快捷指令”</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        在 iPhone 主屏幕向下滑动，呼出<strong class="accent-blue">搜索框</strong>，输入“<strong class="accent-blue">快捷指令</strong>”找到并点开它！
+                    </p>
+                </div>
+                <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                    <img src="images/IMG_4602.jpeg"
+                         onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：搜索快捷指令</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                         alt="[插图示意：iOS 搜索界面，搜索并高亮显示快捷指令 App]"
+                         class="instruction-image">
+                </div>
+            </div>
+
+            <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h2 class="text-2xl font-bold">开启“自动化”之旅</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        进入 App 后，点击屏幕下方的“<strong class="accent-blue">自动化</strong>”标签，然后勇敢地戳右上角的“<strong class="accent-blue">+</strong>”号。
+                    </p>
+                </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="images/IMG_4603.jpeg"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：点击自动化和加号</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="小E产品详情页图片"
+                          class="instruction-image">
+                </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h2 class="text-2xl font-bold">选择 NFC 魔法</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        在“新自动化”列表里，向下翻呀翻，找到那个酷酷的“<strong class="accent-blue">NFC</strong>”选项，点它！
+                    </p>
+                </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="images/IMG_4604.jpeg"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：选择 NFC 触发器</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：新自动化设置界面，高亮 NFC 选项]"
+                          class="instruction-image">
+                </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">4</span>
+                        <h2 class="text-2xl font-bold">配置 & 扫描标签</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        先点击“NFC 标签”下面的“<strong class="accent-blue">扫描</strong>”按钮。然后，在“运行时”那里，一定要选“<strong class="accent-blue">立即运行</strong>”哦，这样碰一下就直接响应，不用再点确认啦！
+                    </p>
+                </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="images/IMG_4605.jpeg"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：点击扫描并选择立即运行</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：NFC 触发设置界面，高亮扫描按钮和立即运行选项]"
+                          class="instruction-image">
+                </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">5</span>
+                        <h2 class="text-2xl font-bold">靠近！NFC 感应</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        手机会弹出“扫描 NFC 标签”的提示。现在，把你的 <strong class="accent-orange">NFC 卡片或贴纸</strong> 温柔地靠近 iPhone <strong class="accent-orange">手机顶部（摄像头附近）</strong>的感应区。
+                    </p>
+                </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="images/IMG_4603.jpeg"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：准备扫描 NFC 弹窗</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：显示“扫描NFC标签”弹窗，提示已准备好扫描]"
+                          class="instruction-image">
+                </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">6</span>
+                        <h2 class="text-2xl font-bold">叮！扫描成功</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        扫描成功后，提示框里会出现一个可爱的<strong class="accent-green">绿色小勾勾 ✓</strong>。
+                    </p>
+                </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="https://picsum.photos/seed/step6/450/800"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：NFC 扫描成功</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：显示“扫描NFC标签”弹窗，内容变为打勾图标]"
+                          class="instruction-image">
+                </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">7</span>
+                        <h2 class="text-2xl font-bold">给标签起个名字</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        为这个 NFC 标签取个好记的名字吧，比如“<strong class="accent-purple">摸鱼专用BGM</strong>”或者“<strong class="accent-purple">本命歌单启动</strong>”，然后点“<strong class="accent-blue">下一步</strong>”。
+                    </p>
+                </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="https://picsum.photos/seed/step7/450/800"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：命名 NFC 标签</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：显示“命名此标签”弹窗，高亮下一步按钮]"
+                          class="instruction-image">
+                </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                 <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">8</span>
+                        <h2 class="text-2xl font-bold">添加动作：打开 App</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        进入自动化编辑界面啦！点击“<strong class="accent-blue">添加操作</strong>”，搜索“<strong class="accent-blue">打开 App</strong>”并选中。接着，点击那个有点暗的“<strong class="accent-blue">App</strong>”字样，选择你心爱的<strong class="accent-green">音乐 App</strong>（比如网易云音乐、QQ音乐啥的）。
+                    </p>
+                 </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="https://picsum.photos/seed/step8/450/800"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：添加打开 App 操作</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：自动化编辑界面，显示已添加的“打开 [音乐App]”操作]"
+                          class="instruction-image">
+                 </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                 <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">9</span>
+                        <h2 class="text-2xl font-bold">添加动作：播放音乐</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        在刚才“打开 App”的下面，找到蓝色的“<strong class="accent-blue">搜索 App 和操作</strong>”框，输入“<strong class="accent-blue">播放音乐</strong>”并添加这个动作。
+                    </p>
+                 </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="https://picsum.photos/seed/step9/450/800"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：添加播放音乐操作</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：自动化脚本编辑界面，在“打开 App”下方添加了“播放音乐”操作]"
+                          class="instruction-image">
+                 </div>
+            </div>
+
+             <div class="step-card p-6 md:flex md:items-start md:space-x-8">
+                 <div class="md:w-1/2">
+                    <div class="step-header">
+                        <span class="step-number">10</span>
+                        <h2 class="text-2xl font-bold">指定灵魂 BGM</h2>
+                    </div>
+                    <p class="instruction text-slate-600 leading-relaxed text-base">
+                        关键一步！点击“播放音乐”动作里那个暗暗的“<strong class="accent-blue">音乐</strong>”字样，从你的音乐库里，选中你希望<strong class="accent-pink">一碰 NFC 就播放</strong>的那首<strong class="accent-pink">神曲</strong>！选好后，别忘了点右上角的“<strong class="accent-blue">完成</strong>”。
+                    </p>
+                 </div>
+                 <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
+                     <img src="https://picsum.photos/seed/step10/450/800"
+                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：选择歌曲</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
+                          alt="[插图示意：音乐选择界面，选择歌曲后，“播放音乐”操作显示歌曲名，并点击完成]"
+                          class="instruction-image">
+                 </div>
+            </div>
+
+            <div class="text-center mt-16 alert-box alert-green">
+                <p class="text-2xl font-bold mb-2">🎉 魔法设置成功！ 🎉</p>
+                <p class="text-lg text-green-800">快拿起你的 NFC 小卡片，靠近 iPhone 顶部试试效果吧！让音乐随触即发~ 🎶</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+      document.addEventListener('click', function (e) {
+        const card = e.target.closest('.step-card');
+        if (!card) return;
+
+        const oldRipple = card.querySelector('.ripple');
+        if (oldRipple) {
+          oldRipple.remove();
+        }
+
+        const rect = card.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const ripple = document.createElement('span');
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.classList.add('ripple');
+
+        card.appendChild(ripple);
+
+        ripple.addEventListener('animationend', () => {
+          ripple.remove();
+        });
+      });
+    </script>
+
+</body>
+</html>
