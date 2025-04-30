@@ -392,12 +392,10 @@
                              <div class="code-block">orpheus://song/<strong>{自动填充ID}</strong>/?autoplay=1</div>
                              <div class="text-sm text-orange-600 my-2"><strong>重要提示:</strong> 这个 `orpheus://` 开头的代码是特定音乐APP（如网易云）的格式。其他APP可能需要不同的代码格式，请自行查找。末尾的 `?autoplay=1` 代表碰卡后自动播放。</div>
                         </li>
-                        <li>点击 <strong class="accent-green">复制</strong> 按钮，复制代码链接，准备写入NFC卡。
-                            <div class="mt-2"></div>
-                                <input type="text" id="finalLinkOutput" readonly placeholder="自动生成最终链接" class="w-full mb-2">
-                                <div class="text-right"></div>
-                                    <button id="copyButton" class="copy-button">复制</button>
-                                </div>
+                        <li>点击下方复制按钮，复制代码链接，准备写入NFC卡。
+                            <div class="flex items-center mt-2">
+                                <input type="text" id="finalLinkOutput" readonly placeholder="自动生成最终链接" class="flex-grow mr-2">
+                                <button id="copyButton" class="copy-button">复制</button>
                             </div>
                         </li>
                     </ol>
