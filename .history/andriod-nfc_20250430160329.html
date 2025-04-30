@@ -386,20 +386,23 @@
                          <div class="id-extractor p-3 sm:p-4">
                             <label for="linkInput">粘贴分享内容:</label>
                             <textarea id="linkInput" placeholder="例如：分享李宗盛的单曲《山丘》: https://y.music.163.com/m/song?id=26598946&userid=..."></textarea>
-                            <label for="idOutput" class="mt-3">歌曲ID (自动提取，可修改):</label>
-                            <input type="text" id="idOutput" placeholder="将自动显示ID，若错误请手动修改">
-                        </div>
-                        <p>确认 <strong class="accent-pink">歌曲ID</strong> 无误后，下方会自动根据模板生成 <strong class="accent-green">完整代码链接</strong>。</p>
-                         <div class="code-block">orpheus://song/<strong>{自动填充ID}</strong>/?autoplay=1</div>
-                         <div class="text-sm text-orange-600 my-2"><strong>重要提示:</strong> 这个 `orpheus://` 开头的代码是特定音乐APP（如网易云）的格式。其他APP可能需要不同的代码格式，请自行查找。末尾的 `?autoplay=1` 代表碰卡后自动播放。</div>
-                        <p>点击 <strong class="accent-green">复制</strong> 按钮，复制代码链接，准备写入NFC卡。</p>
-                        <div class="mt-2 flex items-center">
-                            <input type="text" id="finalLinkOutput" readonly placeholder="自动生成最终链接" class="w-full mb-0 mr-2">
-                            <button id="copyButton" class="copy-button flex-shrink-0">复制</button>
-                        </div>
-                    </div>
+                            </div>
+                        </li>
+                        <li>确认 <strong class="accent-pink">歌曲ID</strong> 无误后，下方会自动根据模板生成 <strong class="accent-green">完整代码链接</strong>。
+                             <div class="code-block">orpheus://song/<strong>{自动填充ID}</strong>/?autoplay=1</div>
+                             <div class="text-sm text-orange-600 my-2"><strong>重要提示:</strong> 这个 `orpheus://` 开头的代码是特定音乐APP（如网易云）的格式。其他APP可能需要不同的代码格式，请自行查找。末尾的 `?autoplay=1` 代表碰卡后自动播放。</div>
+                        </li>
+                        <li>点击 <strong class="accent-green">复制</strong> 按钮，复制代码链接，准备写入NFC卡。
+                            <div class="mt-2"></div>
+                                <input type="text" id="finalLinkOutput" readonly placeholder="自动生成最终链接" class="w-full mb-2">
+                                <div class="text-right"></div>
+                                    <button id="copyButton" class="copy-button">复制</button>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
                 </div>
-                <div class="md:w-1/2 mt-6 md:mt-0 instruction-image-container">
+                <div class="md:w-1/2 mt-5 md:mt-0 instruction-image-container">
                     <img src="images/分享.jpeg"
                          onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'flex items-center justify-center h-full text-slate-400 text-sm p-4 text-center\'>[插图加载失败 T_T] <br> 示意：音乐APP分享与复制链接</div>'; this.parentElement.style.border='1px dashed #cbd5e1'; this.parentElement.style.minHeight='200px';"
                          alt="[插图示意：音乐APP分享与复制链接]"
