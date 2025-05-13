@@ -41,3 +41,6 @@ lerna-debug.log*
 
 # Python virtual environment
 .venv/
+
+# Editor history
+.history/
