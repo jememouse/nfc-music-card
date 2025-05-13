@@ -38,3 +38,6 @@ lerna-debug.log*
 
 # Temporary files created by Metro
 .npmrc
+
+# Python virtual environment
+.venv/
